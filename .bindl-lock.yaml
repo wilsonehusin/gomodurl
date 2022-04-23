@@ -1,0 +1,41 @@
+programs:
+- checksums:
+    flyctl_0.0.322_Linux_x86_64.tar.gz:
+      archive: c5813adf139773d76b770df5fb693b72e602dc1a8f986ebc1a8febbf504067b4
+      binary: 9e1b739b02303e7ac14cfd8c3cf460ef2b538cd1201b23bb22ec380ffcbd4601
+    flyctl_0.0.322_macOS_arm64.tar.gz:
+      archive: 9db8c9522c177b531517d917c827d94d8a883c8667ed7aa62b2fab60097edb9c
+      binary: d860bd7cc22435c6db1c3dfb70d436e0f88d8201f694c747150f5c4ead536feb
+  name: flyctl
+  overlay:
+    Arch:
+      amd64: x86_64
+    OS:
+      darwin: macOS
+      linux: Linux
+  paths:
+    base: https://github.com/superfly/flyctl/releases/download/v{{ .Version }}/
+    checksums:
+      artifact: https://github.com/superfly/flyctl/releases/download/v{{ .Version }}/checksums.txt
+    target: '{{ .Name }}_{{ .Version }}_{{ .OS }}_{{ .Arch }}.tar.gz'
+  version: 0.0.322
+- checksums:
+    ko_0.11.2_Darwin_arm64.tar.gz:
+      archive: 02acfe3bc856805c25d65bb620e414b98aa504c6194ff8e953ce169edfcc03c6
+      binary: d459221a402aa3047e5ed27db76bb669ae958588e6fde0ed7fcf2d84ff19a9fd
+    ko_0.11.2_Linux_x86_64.tar.gz:
+      archive: afb5dacb44bfeafdc53c6de03d9ff74f4a6003c5617381d3139038aa25f3fb66
+      binary: 7f85590cf718c18b41263ecae611f32f01891c7e786389f441672ec9da788f27
+  name: ko
+  overlay:
+    Arch:
+      amd64: x86_64
+    OS:
+      darwin: Darwin
+      linux: Linux
+  paths:
+    base: https://github.com/google/ko/releases/download/v{{ .Version }}/
+    checksums:
+      artifact: https://github.com/google/ko/releases/download/v{{ .Version }}/checksums.txt
+    target: '{{ .Name }}_{{ .Version }}_{{ .OS }}_{{ .Arch }}.tar.gz'
+  version: 0.11.2
