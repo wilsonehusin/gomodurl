@@ -17,12 +17,17 @@ import (
 )
 
 var (
+	//go:embed view/index.html.tmpl
+	indexTmplRaw string
+	indexTmpl    *template.Template
+
 	//go:embed view/package.html.tmpl
 	packageTmplRaw string
 	packageTmpl    *template.Template
 )
 
 func init() {
+	indexTmpl = template.Must(template.New("html").Parse(indexTmplRaw))
 	packageTmpl = template.Must(template.New("html").Parse(packageTmplRaw))
 }
 
@@ -88,7 +93,18 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	path := strings.TrimPrefix(req.URL.Path, "/")
 	path = strings.TrimSuffix(path, "/")
 
-	reqLog.Printf("[%s] info: looking up for '%s/%s'", id, host, path)
+	if path == "" {
+		err := indexTmpl.Execute(w, map[string]string{
+			"Host": host,
+			"ID":   id,
+		})
+		if err != nil {
+			reqLog.Printf("error: rendering index: %s", err.Error())
+		}
+		return
+	}
+
+	reqLog.Printf("info: looking up for '%s/%s'", host, path)
 	pkg := h.packages.Lookup(host, path)
 	if pkg == nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -97,7 +113,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	err := packageTmpl.Execute(w, pkg)
 	if err != nil {
-		reqLog.Printf("[%s] error rendering template: %v", id, err.Error())
+		reqLog.Printf("error: rendering template: %v", err.Error())
 	}
 }
 
