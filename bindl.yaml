@@ -21,7 +21,7 @@ programs:
         artifact: checksums.txt
   - name: flyctl
     provider: github
-    version: 0.0.322
+    version: 0.0.323
     overlay:
       OS:
         linux: Linux

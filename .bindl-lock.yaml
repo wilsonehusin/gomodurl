@@ -1,11 +1,11 @@
 programs:
 - checksums:
-    flyctl_0.0.322_Linux_x86_64.tar.gz:
-      archive: c5813adf139773d76b770df5fb693b72e602dc1a8f986ebc1a8febbf504067b4
-      binary: 9e1b739b02303e7ac14cfd8c3cf460ef2b538cd1201b23bb22ec380ffcbd4601
-    flyctl_0.0.322_macOS_arm64.tar.gz:
-      archive: 9db8c9522c177b531517d917c827d94d8a883c8667ed7aa62b2fab60097edb9c
-      binary: d860bd7cc22435c6db1c3dfb70d436e0f88d8201f694c747150f5c4ead536feb
+    flyctl_0.0.323_Linux_x86_64.tar.gz:
+      archive: 0fd7b0bafa65ec4c98307f3fe852aec2702f5d2509a89a5988b91f373de12add
+      binary: 08f1dadf8ff5b39d9234a9c2a404f8065f58f8f9dee6cd38ca45bf20903e040f
+    flyctl_0.0.323_macOS_arm64.tar.gz:
+      archive: e72ffe284ff3be6e5a258286bb0434c9866e4450eb86a8a4617bb3596ddb349a
+      binary: d5e75b1be662265051e4a548eb23d2581cee2b7a6ad94da971fb8cc0539bc3e1
   name: flyctl
   overlay:
     Arch:
@@ -18,7 +18,7 @@ programs:
     checksums:
       artifact: https://github.com/superfly/flyctl/releases/download/v{{ .Version }}/checksums.txt
     target: '{{ .Name }}_{{ .Version }}_{{ .OS }}_{{ .Arch }}.tar.gz'
-  version: 0.0.322
+  version: 0.0.323
 - checksums:
     golangci-lint-1.45.2-darwin-arm64.tar.gz:
       archive: c2b9669decc1b638cf2ee9060571af4e255f6dfcbb225c293e3a7ee4bb2c7217
