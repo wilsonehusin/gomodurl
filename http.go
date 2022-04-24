@@ -1,7 +1,6 @@
 package gomodurl
 
 import (
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -20,13 +19,13 @@ var (
 func initHTTPClient() {
 	baseDir, err := os.UserCacheDir()
 	if err != nil {
-		log.Printf("warn: finding cache directory: %v", err.Error())
+		logger.Printf("warn: finding cache directory: %v", err.Error())
 		baseDir = os.TempDir()
 	}
 	dir := filepath.Join(baseDir, "gomodurl")
 
 	httpClient = httpcache.NewTransport(diskcache.New(dir)).Client()
-	log.Printf("info: caching http responses in '%s'", dir)
+	logger.Printf("info: caching http responses in '%s'", dir)
 }
 
 func HTTPClient() *http.Client {

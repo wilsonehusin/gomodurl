@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -65,21 +64,21 @@ func (s *GitHubSource) Repositories(ctx context.Context, c *http.Client) ([]*GoP
 
 		req := baseReq.Clone(ctx)
 		req.URL.RawQuery = query.Encode()
-		log.Printf("[%s] outgoing %s: %s", id, req.Method, req.URL.String())
+		logger.Printf("[%s] outgoing %s: %s", id, req.Method, req.URL.String())
 
 		resp, err := c.Do(req)
 		if err != nil {
-			log.Printf("[%s] error: %v", id, err.Error())
+			logger.Printf("[%s] error: %v", id, err.Error())
 			break
 		}
 		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-			log.Printf("[%s] received HTTP %d", id, resp.StatusCode)
+			logger.Printf("[%s] received HTTP %d", id, resp.StatusCode)
 			break
 		}
 
 		result := []GithubRepositoryResponse{}
 		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-			log.Printf("[%s] error parsing json: %v", id, err.Error())
+			logger.Printf("[%s] error parsing json: %v", id, err.Error())
 			break
 		}
 

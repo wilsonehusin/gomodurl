@@ -3,7 +3,6 @@ package gomodurl
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -21,22 +20,22 @@ func ParseSources(b []byte) ([]Source, error) {
 
 	sources := []Source{}
 	for provider, specs := range raw {
-		log.Printf("provider %s has %d packages", provider, len(specs))
+		logger.Printf("provider %s has %d packages", provider, len(specs))
 		switch strings.ToLower(provider) {
 		case "github":
 			for _, spec := range specs {
 				s, err := ParseGitHubSource(spec)
 				if err != nil {
-					log.Printf("warn: unable to parse github spec: %v", err.Error())
+					logger.Printf("warn: unable to parse github spec: %v", err.Error())
 				} else {
 					sources = append(sources, s)
 				}
 			}
 		default:
-			log.Printf("warn: unknown provider: %s", provider)
+			logger.Printf("warn: unknown provider: %s", provider)
 		}
 	}
 
-	log.Printf("info: found %d sources", len(sources))
+	logger.Printf("info: found %d sources", len(sources))
 	return sources, nil
 }

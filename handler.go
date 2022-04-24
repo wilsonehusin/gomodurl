@@ -7,10 +7,11 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/rs/xid"
 )
@@ -25,7 +26,82 @@ func init() {
 	packageTmpl = template.Must(template.New("html").Parse(packageTmplRaw))
 }
 
-func Handler(ctx context.Context, configPath string) (http.Handler, error) {
+func HTTPHandler(ctx context.Context, configPath string) (http.Handler, error) {
+	packages, err := loadPackages(ctx, configPath)
+	if err != nil {
+		return nil, fmt.Errorf("loading packages: %w", err)
+	}
+	h := &Handler{
+		packages:   packages,
+		ctx:        ctx,
+		configPath: configPath,
+	}
+	go h.daemon()
+	return h, nil
+}
+
+type Handler struct {
+	packages *GoPackageList
+
+	ctx        context.Context
+	configPath string
+	lock       sync.RWMutex
+}
+
+func (h *Handler) daemon() {
+	t := time.NewTicker(90 * time.Minute)
+
+	for {
+		select {
+		case <-h.ctx.Done():
+			logger.Printf("handler exit")
+			return
+		case <-t.C:
+			h.reload()
+		}
+
+	}
+}
+
+func (h *Handler) reload() {
+	h.lock.Lock()
+	defer h.lock.Unlock()
+
+	id := xid.New().String()
+	p, err := loadPackages(h.ctx, h.configPath)
+	if err != nil {
+		logger.Printf("[%s] error: reloading config: %s", id, err.Error())
+		return
+	}
+
+	h.packages = p
+	logger.Printf("[%s] info: reloaded config", id)
+}
+
+func (h *Handler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	h.lock.RLock()
+	defer h.lock.RUnlock()
+
+	id := xid.New().String()
+	reqLog := sublogger(id)
+	host, _, _ := strings.Cut(req.Host, ":")
+	path := strings.TrimPrefix(req.URL.Path, "/")
+	path = strings.TrimSuffix(path, "/")
+
+	reqLog.Printf("[%s] info: looking up for '%s/%s'", id, host, path)
+	pkg := h.packages.Lookup(host, path)
+	if pkg == nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Unknown host '%s' and path '%s' combination.\n[%s]\n", host, path, id)
+		return
+	}
+	err := packageTmpl.Execute(w, pkg)
+	if err != nil {
+		reqLog.Printf("[%s] error rendering template: %v", id, err.Error())
+	}
+}
+
+func loadPackages(ctx context.Context, configPath string) (*GoPackageList, error) {
 	config, err := readLocalOrRemoteFile(ctx, configPath)
 	if err != nil {
 		return nil, fmt.Errorf("retrieving config: %w", err)
@@ -40,30 +116,13 @@ func Handler(ctx context.Context, configPath string) (http.Handler, error) {
 	for _, src := range sources {
 		pkgs, err := src.Repositories(ctx, HTTPClient())
 		if err != nil {
-			log.Printf("error: retrieving repositories: %s", err.Error())
+			logger.Printf("error: retrieving repositories: %s", err.Error())
 			continue
 		}
 		packages.Add(pkgs...)
 	}
 
-	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		host, _, _ := strings.Cut(req.Host, ":")
-		path := strings.TrimPrefix(req.URL.Path, "/")
-		path = strings.TrimSuffix(path, "/")
-
-		id := xid.New().String()
-		log.Printf("[%s] info: looking up for '%s/%s'", id, host, path)
-		pkg := packages.Lookup(host, path)
-		if pkg == nil {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "Unknown host '%s' and path '%s' combination.\n[%s]\n", host, path, id)
-			return
-		}
-		err := packageTmpl.Execute(w, pkg)
-		if err != nil {
-			log.Printf("[%s] error rendering template: %v", id, err.Error())
-		}
-	}), nil
+	return packages, nil
 }
 
 func readLocalOrRemoteFile(ctx context.Context, path string) ([]byte, error) {

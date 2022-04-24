@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -14,6 +13,8 @@ import (
 )
 
 func main() {
+	gomodurl.EnableLogger(os.Stderr)
+
 	if err := run(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		fmt.Fprintf(os.Stderr, "error: %s", err.Error())
 		os.Exit(1)
@@ -29,9 +30,7 @@ func run() error {
 	defer cancel()
 
 	configPath := os.Getenv(configEnvVar)
-	log.Printf("info: reading configuration file '%s'", configPath)
-
-	h, err := gomodurl.Handler(ctx, configPath)
+	h, err := gomodurl.HTTPHandler(ctx, configPath)
 	if err != nil {
 		return fmt.Errorf("generating handler: %w", err)
 	}

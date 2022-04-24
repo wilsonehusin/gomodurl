@@ -1,7 +1,6 @@
 package gomodurl
 
 import (
-	"log"
 	"os"
 	"strings"
 )
@@ -90,7 +89,7 @@ func NewGoPackageList() *GoPackageList {
 }
 
 func (gpl *GoPackageList) Lookup(host, path string) *GoPackage {
-	if os.Getenv("GOMODURL_ANYHOST") != "" {
+	if os.Getenv("GOMODURL_DEV") != "" {
 		for _, list := range gpl.hosts {
 			if pkg := list.Lookup(path); pkg != nil {
 				return pkg
@@ -126,7 +125,7 @@ func (gpl *GoPackageList) Add(pkgs ...*GoPackage) {
 		}
 		prev.pkg = pkg
 
-		log.Printf("registered '%s' => '%s'", pkg.Import, pkg.Repository)
+		logger.Printf("registered '%s' => '%s'", pkg.Import, pkg.Repository)
 		gpl.hostLength[pkg.Host]++
 		gpl.length++
 	}
