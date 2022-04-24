@@ -33,3 +33,11 @@ programs:
       target: '{{ .Name }}_{{ .Version }}_{{ .OS }}_{{ .Arch }}.tar.gz'
       checksums:
         artifact: checksums.txt
+  - name: golangci-lint
+    version: 1.45.2
+    provider: github
+    paths:
+      base: golangci/golangci-lint
+      target: "{{ .Name }}-{{ .Version }}-{{ .OS }}-{{ .Arch }}.tar.gz"
+      checksums:
+        artifact: "{{ .Name }}-{{ .Version }}-checksums.txt"

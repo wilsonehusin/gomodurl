@@ -20,6 +20,20 @@ programs:
     target: '{{ .Name }}_{{ .Version }}_{{ .OS }}_{{ .Arch }}.tar.gz'
   version: 0.0.322
 - checksums:
+    golangci-lint-1.45.2-darwin-arm64.tar.gz:
+      archive: c2b9669decc1b638cf2ee9060571af4e255f6dfcbb225c293e3a7ee4bb2c7217
+      binary: 24f76cfcd464793e5d5fc930924586baff52232206ae2a9040467f802a95d1fc
+    golangci-lint-1.45.2-linux-amd64.tar.gz:
+      archive: 595ad6c6dade4c064351bc309f411703e457f8ffbb7a1806b3d8ee713333427f
+      binary: 700869bf9234e808ddecf7666cf362747cd94f7679f4d2a125bbff54f2daeb22
+  name: golangci-lint
+  paths:
+    base: https://github.com/golangci/golangci-lint/releases/download/v{{ .Version }}/
+    checksums:
+      artifact: https://github.com/golangci/golangci-lint/releases/download/v{{ .Version }}/{{ .Name }}-{{ .Version }}-checksums.txt
+    target: '{{ .Name }}-{{ .Version }}-{{ .OS }}-{{ .Arch }}.tar.gz'
+  version: 1.45.2
+- checksums:
     ko_0.11.2_Darwin_arm64.tar.gz:
       archive: 02acfe3bc856805c25d65bb620e414b98aa504c6194ff8e953ce169edfcc03c6
       binary: d459221a402aa3047e5ed27db76bb669ae958588e6fde0ed7fcf2d84ff19a9fd
