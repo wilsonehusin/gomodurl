@@ -7,6 +7,7 @@ processes = []
 [build]
 
 [env]
+  GOMODURL_CONFIG = "https://raw.githubusercontent.com/wilsonehusin/gomodurl/main/gomodurl.json"
 
 [experimental]
   allowed_public_ports = []

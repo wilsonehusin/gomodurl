@@ -1,0 +1,12 @@
+{
+  "github": [
+    { 
+      "owner": "wilsonehusin",
+      "vanity": "go.husin.dev"
+    },
+    { 
+      "owner": "xargs-dev",
+      "vanity": "go.xargs.dev"
+    }
+  ]
+}
