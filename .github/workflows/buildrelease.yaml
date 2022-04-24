@@ -14,7 +14,8 @@ jobs:
       with:
         go-version: 1.18.x
 
-    - run: |
+    - name: go mod tidy
+      run: |
         go version
         go mod tidy
 
@@ -31,7 +32,8 @@ jobs:
       with:
         go-version: 1.18.x
 
-    - run: |
+    - name: go test
+      run: |
         go version
         go test -v ./...
 
@@ -72,7 +74,7 @@ jobs:
 
     - name: Authenticate registry
       run: |
-        make koauth PASSWORD=${{ secrets.GITHUB_TOKEN }}
+        make koauth REGISTRY=ghcr.io PASSWORD=${{ secrets.GITHUB_TOKEN }}
 
     - id: publish
       name: Push container
@@ -94,6 +96,7 @@ jobs:
       with:
         go-version: 1.18.x
 
-    - run: make deploy IMAGE=${{needs.publish.outputs.container-tag}}
+    - name: Deploy to Fly.io
+      run: make deploy IMAGE=${{needs.publish.outputs.container-tag}}
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

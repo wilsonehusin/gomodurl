@@ -2,16 +2,16 @@ REGISTRY?=ghcr.io/wilsonehusin
 
 .PHONY: deploy
 deploy: bin/flyctl
-	ifndef IMAGE
-		$(error IMAGE is not set)
-	endif
+ifndef IMAGE
+	$(error IMAGE is not set)
+endif
 	bin/flyctl deploy --image ${IMAGE}
 
 .PHONY: koauth
 koauth: bin/ko
-	ifndef PASSWORD
-		$(error PASSWORD is not set)
-	endif
+ifndef PASSWORD
+	$(error PASSWORD is not set)
+endif
 	@ko login ${REGISTRY} --username "gomodurl" --password ${PASSWORD}
 
 .PHONY: publish-container
