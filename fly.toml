@@ -6,6 +6,10 @@ processes = []
 
 [build]
 
+[mounts]
+source="cache"
+destination="/home/nonroot/.cache"
+
 [env]
   GOMODURL_CONFIG = "https://raw.githubusercontent.com/wilsonehusin/gomodurl/main/gomodurl.json"
 
